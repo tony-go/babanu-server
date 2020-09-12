@@ -38,7 +38,7 @@ describe('Auth module', () => {
       expect(res?.data?.signIn?.user).toBeTruthy()
     })
 
-    it('signUp mutation should call db.user(), compare, sign', async () => {
+    it('signUp mutation should return a token and a user', async () => {
       const res = await mutate({
         mutation: gql`
           mutation SignUp($input: SignUpInput!) {

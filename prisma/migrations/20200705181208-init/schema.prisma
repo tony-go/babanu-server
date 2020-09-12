@@ -41,7 +41,7 @@ model Member {
   user      User       @relation(fields: [userId], references: [id])
   userId    Int
   status    MemberShip
-  List      List?      @relation(fields: [listId], references: [id])
+  list      List?      @relation(fields: [listId], references: [id])
   listId    Int?
 }
 
@@ -75,5 +75,6 @@ model User {
   genre     Genre
   gifts     Gift[]
   members   Member[]
-  List      List[]
+  lists     List[]
+  isConfirmed Boolean @default(false)
 }

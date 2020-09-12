@@ -6,6 +6,7 @@ import {IUserArgs, IUserIdArgs} from './types'
 import {IContext} from '../context'
 import {Parent} from '../types'
 import {checkUserValidity} from '../utils/user'
+import {User} from '@prisma/client'
 
 export const userTypeDefs = gql`
   enum Role {
@@ -19,7 +20,7 @@ export const userTypeDefs = gql`
   }
 
   type User {
-    id: String
+    id: Int
     firstName: String
     lastName: String
     email: String
@@ -27,6 +28,7 @@ export const userTypeDefs = gql`
     role: Role
     genre: Genre
     list: [List]
+    isConfirmed: Boolean
   }
 
   input UserInput {
@@ -39,7 +41,7 @@ export const userTypeDefs = gql`
   }
 
   input UpdateUserInput {
-    id: String
+    id: Int
     firstName: String
     lastName: String
     email: String
@@ -49,27 +51,35 @@ export const userTypeDefs = gql`
   }
 
   extend type Query {
-    user(id: String!): User
+    user(id: Int!): User
     users: [User]
   }
 
   extend type Mutation {
     addUser(user: UserInput!): User
     updateUser(user: UpdateUserInput!): User
-    deleteUser(id: String!): User
+    deleteUser(id: Int!): User
   }
 `
 
 export const userResolvers = {
   Query: {
-    user: async (parent: Parent, args: IUserIdArgs, context: IContext) => {
+    user: async (
+      parent: Parent,
+      args: IUserIdArgs,
+      context: IContext,
+    ): Promise<User | null> => {
       checkUserValidity(context)
 
       const {db} = context
       const {id} = args
       return await db.user.findOne({where: {id}})
     },
-    users: async (parent: Parent, args: any, context: IContext) => {
+    users: async (
+      parent: Parent,
+      args: unknown,
+      context: IContext,
+    ): Promise<User[]> => {
       checkUserValidity(context)
 
       const {db} = context
@@ -77,7 +87,11 @@ export const userResolvers = {
     },
   },
   Mutation: {
-    addUser: async (parent: Parent, args: IUserArgs, context: IContext) => {
+    addUser: async (
+      parent: Parent,
+      args: IUserArgs,
+      context: IContext,
+    ): Promise<User> => {
       checkUserValidity(context)
 
       const {db} = context
@@ -86,7 +100,11 @@ export const userResolvers = {
       newUser.password = await hash(newUser.password, 10)
       return await db.user.create({data: newUser})
     },
-    updateUser: async (parent: Parent, args: IUserArgs, context: IContext) => {
+    updateUser: async (
+      parent: Parent,
+      args: IUserArgs,
+      context: IContext,
+    ): Promise<User> => {
       checkUserValidity(context)
 
       const {db} = context
@@ -102,7 +120,7 @@ export const userResolvers = {
       parent: Parent,
       {id}: IUserIdArgs,
       context: IContext,
-    ) => {
+    ): Promise<User> => {
       checkUserValidity(context)
 
       const {db} = context

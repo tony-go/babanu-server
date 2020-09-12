@@ -452,7 +452,7 @@
     {
       "tag": "CreateField",
       "model": "Member",
-      "field": "List",
+      "field": "list",
       "type": "List",
       "arity": "Optional"
     },
@@ -462,7 +462,7 @@
         "path": {
           "tag": "Field",
           "model": "Member",
-          "field": "List"
+          "field": "list"
         },
         "directive": "relation"
       }
@@ -474,7 +474,7 @@
         "path": {
           "tag": "Field",
           "model": "Member",
-          "field": "List"
+          "field": "list"
         },
         "directive": "relation"
       },
@@ -488,7 +488,7 @@
         "path": {
           "tag": "Field",
           "model": "Member",
-          "field": "List"
+          "field": "list"
         },
         "directive": "relation"
       },
@@ -992,9 +992,41 @@
     {
       "tag": "CreateField",
       "model": "User",
-      "field": "List",
+      "field": "lists",
       "type": "List",
       "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "isConfirmed",
+      "type": "Boolean",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "isConfirmed"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "isConfirmed"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "false"
     }
   ]
 }

@@ -14,7 +14,7 @@ describe('user module', () => {
   })
   const server = createTestServer(context)
   const {query, mutate} = createTestClient(server as any)
-  const id = '2'
+  const id = 2
 
   describe('queries', () => {
     afterEach(() => {
@@ -62,7 +62,7 @@ describe('user module', () => {
 
     describe('query user', () => {
       const userQuery = gql`
-        query User($id: String!) {
+        query User($id: Int!) {
           user(id: $id) {
             id
             lastName
@@ -210,7 +210,7 @@ describe('user module', () => {
 
     describe('deleteUser', () => {
       const mutation = gql`
-        mutation DeleteUser($id: String!) {
+        mutation DeleteUser($id: Int!) {
           deleteUser(id: $id) {
             id
           }

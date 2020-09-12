@@ -1,5 +1,5 @@
 import {verify} from 'jsonwebtoken'
-import {PrismaClient} from '@prisma/client'
+import {PrismaClient, User} from '@prisma/client'
 
 import env from './env'
 
@@ -7,23 +7,32 @@ import {IUser} from './users/types'
 
 export interface IContext {
   db: PrismaClient
-  user: null | IUser
+  user: null | User
 }
 
-export function getUser(token: string): null | IUser {
+export async function getUser(
+  token: string,
+  ctx: IContext,
+): Promise<User | null> {
   if (!token) {
     return null
   }
-  return verify(token, env.SECRET_KEY) as IUser
+
+  if (!ctx || !ctx.db) {
+    return null
+  }
+
+  const userToken = verify(token, env.SECRET_KEY) as IUser
+  return await ctx.db.user.findOne({where: {id: userToken.id}})
 }
 
 const db = new PrismaClient()
 
-export default ({req}: any): IContext => {
+export default async ({req}: any): Promise<IContext> => {
   const token = req.headers.authorization || ''
 
   return {
     db,
-    user: getUser(token),
+    user: await getUser(token, {db, user: null}),
   }
 }

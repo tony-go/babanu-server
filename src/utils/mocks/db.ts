@@ -1,4 +1,5 @@
-const getFakeUser = () => Promise.resolve({name: 'Tony'})
+const getFakeUser = () =>
+  Promise.resolve({firstName: 'Tony', isConfirmed: true})
 
 export default {
   user: {

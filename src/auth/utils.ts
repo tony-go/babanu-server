@@ -25,6 +25,7 @@ export async function formatSignUpInput(
     ...input,
     email: input.email.toLowerCase(),
     password: await hash(input.password, 10),
+    isConfirmed: false,
   }
 }
 

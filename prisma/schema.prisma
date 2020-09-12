@@ -76,4 +76,5 @@ model User {
   gifts     Gift[]
   members   Member[]
   lists     List[]
+  isConfirmed Boolean @default(false)
 }

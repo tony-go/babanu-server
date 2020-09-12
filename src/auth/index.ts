@@ -1,5 +1,5 @@
 import {gql, AuthenticationError, UserInputError} from 'apollo-server'
-import {hash, compare} from 'bcrypt'
+import {compare} from 'bcrypt'
 import {sign} from 'jsonwebtoken'
 import {User} from '@prisma/client'
 
@@ -8,6 +8,7 @@ import env from './../env'
 import {Parent} from '../types'
 import {IContext} from '../context'
 import {formatSignUpInput, createToken, formatPublicUser} from './utils'
+import emailTransport, {getConfirmationMailOptions} from './mailer'
 
 export const authTypeDefs = gql`
   input SignInInput {
@@ -31,6 +32,7 @@ export const authTypeDefs = gql`
   extend type Mutation {
     signIn(input: SignInInput!): SignOutput
     signUp(input: SignUpInput!): SignOutput
+    confirm: Boolean
   }
 `
 
@@ -40,6 +42,7 @@ export interface ISignInInput {
   firstName: string
   lastName: string
   genre: 'MALE' | 'FEMALE'
+  isConfirmed?: boolean
 }
 
 export interface ISignUpInput {
@@ -59,6 +62,14 @@ export const authResolvers = {
 
       // We add it to the db
       const user = await db.user.create({data: formattedInput})
+
+      // we send an email if we are not in a test context
+      const mailOptions = getConfirmationMailOptions(user.email)
+      if (process.env.NODE_ENV !== 'test') {
+        emailTransport.sendMail(mailOptions, () => {
+          console.log(`Confirmation email for ${user.email} sent!`)
+        })
+      }
 
       // we send back the user and a token
       return {
@@ -81,6 +92,12 @@ export const authResolvers = {
         )
       }
 
+      if (!user.isConfirmed) {
+        throw new AuthenticationError(
+          `User with email address ${input.email} is not confirmed`,
+        )
+      }
+
       const match = await compare(input.password, user.password)
 
       if (!match) {
@@ -91,6 +108,18 @@ export const authResolvers = {
         token: sign(user, env.SECRET_KEY, {expiresIn: '30d'}),
         user,
       }
+    },
+    confirm: async (
+      parent: Parent,
+      args: unknown,
+      {db, user}: IContext,
+    ): Promise<boolean> => {
+      if (user?.isConfirmed) {
+        throw new Error(`Email ${user.email} is already confirmed`)
+      }
+
+      await db.user.update({where: {id: user?.id}, data: {isConfirmed: true}})
+      return true
     },
   },
 }
