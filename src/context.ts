@@ -4,7 +4,6 @@ import {PrismaClient, User} from '@prisma/client'
 import env from './env'
 
 import {IUser} from './users/types'
-import { Request } from 'apollo-server'
 
 export interface IContext {
   db: PrismaClient
