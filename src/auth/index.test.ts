@@ -10,7 +10,7 @@ describe('Auth module', () => {
     db,
   })
   const server = createTestServer(context)
-  const {mutate} = createTestClient(server as any)
+  const {mutate} = createTestClient(server)
 
   describe('Mutation', () => {
     it('signIn mutation should call db.createUser, hash, sign', async () => {

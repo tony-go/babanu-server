@@ -13,7 +13,7 @@ describe('user module', () => {
     user,
   })
   const server = createTestServer(context)
-  const {query, mutate} = createTestClient(server as any)
+  const {query, mutate} = createTestClient(server)
   const id = 2
 
   describe('queries', () => {
@@ -106,7 +106,7 @@ describe('user module', () => {
   })
 
   describe('mutations', () => {
-    const userSource: any = {
+    const userSource = {
       firstName: 'bakate',
       lastName: 'yoyo',
       password: 'lol',

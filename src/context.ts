@@ -4,6 +4,7 @@ import {PrismaClient, User} from '@prisma/client'
 import env from './env'
 
 import {IUser} from './users/types'
+import { Request } from 'apollo-server'
 
 export interface IContext {
   db: PrismaClient
@@ -28,7 +29,7 @@ export async function getUser(
 
 const db = new PrismaClient()
 
-export default async ({req}: any): Promise<IContext> => {
+export default async ({req}): Promise<IContext> => {
   const token = req.headers.authorization || ''
 
   return {
